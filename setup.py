@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """ cx_Freeze setup script for bwCSV. """
@@ -19,15 +19,16 @@ if sys.platform == 'win32':
     exe = Executable(script, appendScriptToExe = True,
                     appendScriptToLibrary = False, base = "Win32GUI",
                     targetDir = "build", targetName = "bwCSV.exe",
-                    icon = "icon_256x256.ico")
+                    icon = "icon.ico")
 else:
     exe = Executable(script, targetDir = "build", targetName = "bwCSV")
 
 # Setup
 setup(
     name = "bwCSV",
-    version = "1.00",
-    description = "A lightweight application to view CSV-files.",
+    version = "1.01",
+    description = "A lightweight application to view CSV files.",
     author = 'bulkware',
     options = dict(build_exe = buildOptions),
     executables = [exe])
+

@@ -2,7 +2,7 @@
 Name "bwCSV"
 
 ; The file to write
-OutFile "installers\bwCSV_100_installer_win32.exe"
+OutFile "installers\bwCSV_101_installer_win32.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\bwCSV"

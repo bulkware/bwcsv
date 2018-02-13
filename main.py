@@ -1,7 +1,7 @@
-#!/usr/bin/python
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" A lightweight application to view CSV-files. """
+""" A lightweight application to view CSV files. """
 
 # Python imports
 import configparser # Configuration file parser
@@ -12,7 +12,7 @@ import sys # System-specific parameters and functions
 from PyQt4 import QtCore, QtGui
 
 # Application classes
-from csvparser import CSVParser # A class to handle CSV-files
+from csvparser import CSVParser # A class to handle CSV files
 
 # Application functions
 import functions # Useful functions
@@ -27,14 +27,13 @@ class Main(QtGui.QMainWindow):
     def __init__(self):
 
         # Declare class variables
-        self.configfile = "config.cfg" # Configuration file
+        self.file = None # Variable for file
         self.searchresults = [] # A list for search results
-        self.filepath = "" # String for opened filename and path
         self.fieldseparator = chr(44) # Field separator
         self.textdelimiter = chr(34) # Text delimiter
-        self.horizontalheader = True # Boolean for horizontal header
-        self.verticalheader = True # Boolean for vertical header
-        self.headerlabels = False # Boolean for header labels
+        self.hheader = True # Boolean for horizontal header
+        self.vheader = True # Boolean for vertical header
+        self.hlabels = False # Boolean for header labels
 
         # Initialize top level window widget
         QtGui.QMainWindow.__init__(self)
@@ -71,150 +70,104 @@ class Main(QtGui.QMainWindow):
         # Create an instance of list
         self.csvparser = CSVParser()
 
-        # Load configuration file
-        if os.path.isfile(self.configfile):
-            if self.loadConfig():
-                message = "Configuration file loaded successfully."
-            else:
-                message = "Error: unable to load configuration file."
+        # Load settings
+        try:
+            settings = QtCore.QSettings("bulkware", "bwCSV")
+            if settings.contains("file"):
+                self.file = settings.value("file", type=str)
+            if settings.contains("fieldseparator"):
+                self.fieldseparator = settings.value("fieldseparator", type=str)
+            if settings.contains("textdelimiter"):
+                self.textdelimiter = settings.value("textdelimiter", type=str)
+            if settings.contains("horizontalheader"):
+                self.hheader = settings.value("horizontalheader", type=bool)
+            if settings.contains("verticalheader"):
+                self.vheader = settings.value("verticalheader", type=bool)
+            if settings.contains("headerlabels"):
+                self.hlabels = settings.value("headerlabels", type=bool)
+            if settings.contains("windowstate"):
+                windowstate = settings.value("windowstate", type=int)
+                if windowstate == 1:
+                    self.setWindowState(QtCore.Qt.WindowMinimized)
+                elif windowstate == 2:
+                    self.setWindowState(QtCore.Qt.WindowMaximized)
 
-            # Show message
-            self.ui.statusBar.showMessage(message)
+        # Error occured, set default settings
+        except:
+            self.file = None
+            self.fieldseparator = chr(44)
+            self.textdelimiter = chr(34)
+            self.hheader = True
+            self.vheader = True
+            self.hlabels = False
+
+        finally:
+            pass
 
         # Set file if it's in the command line arguments
         if len(sys.argv) > 1:
             if os.path.isfile(sys.argv[1]):
-                self.filepath = sys.argv[1]
+                self.file = sys.argv[1]
 
         # Set horizontal header to table
-        if not self.horizontalheader:
-            self.headerlabels = False
+        if not self.hheader:
+            self.hlabels = False
             self.ui.menuHeaderLabels.setEnabled(False)
             self.ui.menuHorizontalHeader.setChecked(False)
             self.ui.tblContents.horizontalHeader().setVisible(False)
 
         # Set vertical header to table
-        if not self.verticalheader:
+        if not self.vheader:
             self.ui.menuVerticalHeader.setChecked(False)
             self.ui.tblContents.verticalHeader().setVisible(False)
 
         # Set header labels checked
-        if self.headerlabels:
+        if self.hlabels:
             self.ui.menuHeaderLabels.setChecked(True)
 
-        # Open CSV-file
-        if self.filepath != "":
-            if self.openCSV(self.filepath):
+        # Open CSV file
+        if self.file and self.file != "":
+            if self.openCSV(self.file):
                 pass
             else:
-                self.filepath = ""
+                self.file = None
 
 
-    # Load configuration file
-    def loadConfig(self):
-
-        # Try to load configuration file
-        try:
-            config = configparser.RawConfigParser()
-            config.read(self.configfile)
-
-            self.filepath = str(config.get("default",
-                "file path"))
-            self.fieldseparator = str(config.get("default",
-                "field separator"))
-            self.textdelimiter = str(config.get("default",
-                "text delimiter"))
-            self.horizontalheader = config.getboolean("default",
-                "horizontal header")
-            self.verticalheader = config.getboolean("default",
-                "vertical header")
-            self.headerlabels = config.getboolean("default",
-                "header labels")
-
-            windowstate = config.getint("default", "window state")
-            if windowstate == 1:
-                self.setWindowState(QtCore.Qt.WindowMinimized)
-            elif windowstate == 2:
-                self.setWindowState(QtCore.Qt.WindowMaximized)
-
-            # If field separator is empty, set default
-            if self.fieldseparator == "":
-                self.fieldseparator = chr(44)
-
-            # Discard variables
-            if config: del(config)
-
-        # Except
-        except:
-            return(False)
-
-        # Finally
-        finally:
-            return(True)
-
-
-    # Save configuration file
-    def saveConfig(self):
-
-        # Try to save configuration file
-        try:
-            config = configparser.RawConfigParser()
-
-            config.add_section("default")
-            config.set("default", "file path", self.filepath)
-            config.set("default", "field separator", self.fieldseparator)
-            config.set("default", "text delimiter", self.textdelimiter)
-            config.set("default", "horizontal header", self.horizontalheader)
-            config.set("default", "vertical header", self.verticalheader)
-            config.set("default", "header labels", self.headerlabels)
-            config.set("default", "window state", int(self.windowState()))
-
-            with open(self.configfile, "w") as configfile:
-                config.write(configfile)
-
-            # Discard variables
-            if config: del(config)
-
-        # Except
-        except:
-            return(False)
-
-        # Finally
-        finally:
-            return(True)
-
-
-     # A method to show "open file"-dialog
+    # A method to show "open file"-dialog
     def openFile(self):
 
         # Path to file using a dialog
-        filepath = QtGui.QFileDialog.getOpenFileName(self, "Open CSV file",
-            self.filepath, self.tr("CSV files (*.csv)"))
+        file = QtGui.QFileDialog.getOpenFileName(self, "Open CSV file",
+            self.file, self.tr("CSV files (*.csv)"))
 
         # Open file
-        if filepath != "":
-            self.openCSV(filepath)
+        if file != "":
+            self.openCSV(file)
 
 
-    # A method to open a csv-file
-    def openCSV(self, filepath):
+    # A method to open a CSV file
+    def openCSV(self, file):
 
 		# Try to load file
-        loadfile = self.csvparser.load_file(filepath, self.fieldseparator,
+        loadfile = self.csvparser.load_file(file, self.fieldseparator,
                                             self.textdelimiter)
         if loadfile:
-            self.filepath = filepath
-            self.ui.statusBar.showMessage(self.csvparser.message)
+            self.file = file
+            self.setWindowTitle("bwCSV - " + os.path.basename(self.file))
         else:
             self.ui.statusBar.showMessage(self.csvparser.message)
             QtGui.QMessageBox.critical(self, "Error", self.csvparser.message)
-            return(False)
+            return False
 
         # Populate table widget
         if self.refreshTable():
-            return(True)
+            self.ui.statusBar.showMessage(self.csvparser.message)
+            return True
         else:
-            return(False)
+            message = "Error: unable to refresh table."
+            QtGui.QMessageBox.critical(self, "Error", message)
+            self.ui.statusBar.showMessage(message)
+            return False
 
 
     # A method to refresh table
@@ -232,7 +185,7 @@ class Main(QtGui.QMainWindow):
         # If header labels are selected, set the first item to them
         pos1 = None
         pos2 = None
-        if self.horizontalheader and self.headerlabels:
+        if self.hheader and self.hlabels:
             pos1 = 1
             rows -= 1
             headers = self.csvparser.filedata[0:1][0]
@@ -242,7 +195,7 @@ class Main(QtGui.QMainWindow):
         self.ui.tblContents.setRowCount(rows)
 
         # Set header labels
-        if self.horizontalheader and self.headerlabels:
+        if self.hheader and self.hlabels:
             self.ui.tblContents.setHorizontalHeaderLabels(headers)
 
         # Populate table widget
@@ -255,7 +208,7 @@ class Main(QtGui.QMainWindow):
 
         # Add columns to column list
         for column in range(columns):
-            if self.horizontalheader and self.headerlabels:
+            if self.hheader and self.hlabels:
                 self.ui.lstColumns.addItem(headers[column])
             else:
                 self.ui.lstColumns.addItem("Column " + str(column + 1))
@@ -267,8 +220,13 @@ class Main(QtGui.QMainWindow):
         self.ui.tblContents.resizeRowsToContents()
         self.ui.tblContents.setVisible(True)
 
+        # If search has a string, run search
+        searchstring = str(self.ui.txtSearch.text())
+        if self.ui.txtSearch.text() != "":
+            self.searchFromTable()
+
         # All went well
-        return(True)
+        return True
 
 
     # Set field separator
@@ -283,14 +241,14 @@ class Main(QtGui.QMainWindow):
             if fieldseparator == "":
                 QtGui.QMessageBox.critical(self, "Error",
                     "Field separator cannot be empty.")
-                return(False)
+                return False
 
             # Set new field separator
             self.fieldseparator = fieldseparator
 
             # Reload file if a file is opened
-            if self.filepath != "":
-                self.openCSV(self.filepath)
+            if self.file != "":
+                self.openCSV(self.file)
 
 
     # Set text delimiter
@@ -307,27 +265,27 @@ class Main(QtGui.QMainWindow):
             self.textdelimiter = textdelimiter
 
             # Reload file if a file is opened
-            if self.filepath != "":
-                self.openCSV(self.filepath)
+            if self.file and self.file != "":
+                self.openCSV(self.file)
 
 
     # Show/hide horizontal header
     def horizontalHeader(self):
 
         if self.ui.menuHorizontalHeader.isChecked():
-            self.horizontalheader = True
+            self.hheader = True
             self.ui.menuHeaderLabels.setEnabled(True)
             self.ui.tblContents.horizontalHeader().setVisible(True)
         else:
-            self.headerlabels = False
-            self.horizontalheader = False
+            self.hlabels = False
+            self.hheader = False
             self.ui.menuHeaderLabels.setChecked(False)
             self.ui.menuHeaderLabels.setEnabled(False)
             self.ui.menuHorizontalHeader.setChecked(False)
             self.ui.tblContents.horizontalHeader().setVisible(False)
 
             # Refresh table if a file is opened
-            if self.filepath != "":
+            if self.file and self.file != "":
                 self.refreshTable()
 
 
@@ -335,10 +293,10 @@ class Main(QtGui.QMainWindow):
     def verticalHeader(self):
 
         if self.ui.menuVerticalHeader.isChecked():
-            self.verticalheader = True
+            self.vheader = True
             self.ui.tblContents.verticalHeader().setVisible(True)
         else:
-            self.verticalheader = False
+            self.vheader = False
             self.ui.tblContents.verticalHeader().setVisible(False)
 
 
@@ -346,12 +304,12 @@ class Main(QtGui.QMainWindow):
     def headerLabels(self):
 
         if self.ui.menuHeaderLabels.isChecked():
-            self.headerlabels = True
+            self.hlabels = True
         else:
-            self.headerlabels = False
+            self.hlabels = False
 
-        # Refresh table if a file is opened
-        if self.filepath != "":
+        # Refresh table and search if a file is opened
+        if self.file and self.file != "":
             self.refreshTable()
 
 
@@ -359,16 +317,16 @@ class Main(QtGui.QMainWindow):
     def searchFromTable(self):
 
         # No file opened
-        if self.filepath == "":
+        if self.file == "":
             QtGui.QMessageBox.critical(self, "Error", "No file opened.")
-            return(False)
+            return False
 
         # No search string specified
         searchstring = str(self.ui.txtSearch.text())
         if searchstring == "":
             QtGui.QMessageBox.critical(self, "Error",
                 "No search string specified.")
-            return(False)
+            return False
 
         # Clear search results
         self.searchresults = []
@@ -436,23 +394,28 @@ class Main(QtGui.QMainWindow):
 
     # About message
     def aboutMessage(self):
-        message = "<strong>bwCSV</strong><br />"
-        message += "Version 1.00<br />"
-        message += "<br />"
-        message += "This is free software.<br />"
-        message += "Released under the General Public Licence.<br />"
+        message = """<strong>bwCSV</strong><br />
+        Version 1.01<br />
+        <br />
+        This is free software.<br />
+        Released under the General Public Licence.<br />
+        <br />
+        <a href="http://sourceforge.net/projects/bwcsv/">SourceForge</a>"""
         QtGui.QMessageBox.about(self, "About", message)
 
 
     # Closing the application
     def closeEvent(self, event):
 
-        # Save configuration file
-        if self.saveConfig():
-            pass
-        else:
-            QtGui.QMessageBox.critical(self, "Error",
-                "Unable to save configuration file.")
+        # Save settings
+        settings = QtCore.QSettings("bulkware", "bwCSV")
+        settings.setValue("file", self.file)
+        settings.setValue("fieldseparator", self.fieldseparator)
+        settings.setValue("textdelimiter", self.textdelimiter)
+        settings.setValue("horizontalheader", self.hheader)
+        settings.setValue("verticalheader", self.vheader)
+        settings.setValue("headerlabels", self.hlabels)
+        settings.setValue("windowstate", int(self.windowState()))
 
 
     # Quit application

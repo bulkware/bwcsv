@@ -1,60 +1,66 @@
-#!/usr/bin/python
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" A class to handle CSV-files. """
+""" A class to handle CSV files. """
 
 # Imports
 import csv # CSV File Reading and Writing
 import os # Miscellaneous operating system interfaces
 
-# A class to handle CSV-files
+# A class to handle CSV files
 class CSVParser(object):
 
     # Initialization
     def __init__(self):
 
         # Declare class variables
-        self.columncount = 0 # CSV-file column count
+        self.columncount = 0 # CSV file column count
         self.filedata = [] # List for file data
         self.message = "" # Error/success message
-        self.rowcount = 0 # CSV-file row count
+        self.rowcount = 0 # CSV file row count
         self.success = False # Successful file open
 
 
-    # A method to load csv-file
-    def load_file(self, filepath, fieldseparator=",", textdelimiter='"'):
+    # A method to load CSV file
+    def load_file(self, file, fieldseparator=",", textdelimiter='"'):
 
         # Set the file opened to false
         self.success = False
 
+        # Check if file path is None
+        if not file:
+            self.message = "Error: no file."
+            return False
+
         # Check if file path is not empty
-        if filepath == "":
+        if file == "":
             self.message = "Error: filename is empty."
-            return(False)
-
-        # Check if file exists
-        if not os.path.exists(filepath):
-            self.message = "Error: file does not exist."
-            return(False)
-
-        # Check if path is an existing regular file
-        if not os.path.isfile(filepath):
-            self.message = "Error: not a file."
-            return(False)
+            return False
 
         # Extension check
-        if not filepath.lower().endswith(".csv"):
+        ext = file.lower()
+        if not ext.endswith(".csv"):
             self.message = "Error: invalid file extension."
-            return(False)
+            return False
 
-        # Try to load .csv-file
+        # Check if file exists
+        if not os.path.exists(file):
+            self.message = "Error: file does not exist."
+            return False
+
+        # Check if path is an existing regular file
+        if not os.path.isfile(file):
+            self.message = "Error: not a file."
+            return False
+
+        # Try to load CSV file
         try:
 
             # Clear list
             self.filedata = []
 
             # Create a file handle and open file using csv.reader
-            filehandle = open(filepath, "r")
+            filehandle = open(file, "r")
             csvfile = csv.reader(filehandle, delimiter=fieldseparator,
                 quotechar=textdelimiter)
 
@@ -96,6 +102,6 @@ class CSVParser(object):
 
             if self.success:
                 self.message = "File opened successfully."
-                return(True)
+                return True
             else:
-                return(False)
+                return False

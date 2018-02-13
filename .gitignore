@@ -1,0 +1,10 @@
+# Folders
+.git
+__pycache__
+build
+icons
+installer
+versions
+
+# Files
+config.cfg

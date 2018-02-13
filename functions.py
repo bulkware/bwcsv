@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Python imports
@@ -11,7 +11,7 @@ def find_string(search, subject, ignorecase=False, wholeword=False):
 
     # Search or subject cannot be empty
     if search == "" or subject == "":
-        return(False)
+        return False
 
     # Escape search string
     search = re.escape(search)
@@ -23,10 +23,10 @@ def find_string(search, subject, ignorecase=False, wholeword=False):
     # Search using regular expressions
     if ignorecase:
         if re.search(search, subject, re.IGNORECASE):
-            return(True)
+            return True
     else:
         if re.search(search, subject):
-            return(True)
+            return True
 
     # Not found
-    return(False)
+    return False
