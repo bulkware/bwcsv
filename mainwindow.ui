@@ -19,10 +19,6 @@
   <property name="windowTitle">
    <string>bwCSV</string>
   </property>
-  <property name="windowIcon">
-   <iconset resource="icons.qrc">
-    <normaloff>:/icon.png</normaloff>:/icon.png</iconset>
-  </property>
   <property name="locale">
    <locale language="English" country="UnitedStates"/>
   </property>
@@ -41,6 +37,9 @@
         <horstretch>1</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
       </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
@@ -91,6 +90,9 @@
       </item>
       <item>
        <widget class="QLineEdit" name="txtSearch">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -183,6 +185,9 @@
       </item>
       <item>
        <widget class="QListWidget" name="lstColumns">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -249,6 +254,9 @@
       </item>
       <item>
        <widget class="QListWidget" name="lstSearchResults">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>200</width>
@@ -273,128 +281,69 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="menuOpen"/>
-    <addaction name="menuQuit"/>
+    <addaction name="actionOpenFile"/>
+    <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuSettings_2">
+   <widget class="QMenu" name="menuSettings">
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="menuFieldSeparator"/>
-    <addaction name="menuTextDelimiter"/>
+    <addaction name="actionFieldSeparator"/>
+    <addaction name="actionTextDelimiter"/>
     <addaction name="separator"/>
-    <addaction name="menuHorizontalHeader"/>
-    <addaction name="menuVerticalHeader"/>
+    <addaction name="actionHorizontalHeader"/>
+    <addaction name="actionVerticalHeader"/>
     <addaction name="separator"/>
-    <addaction name="menuHeaderLabels"/>
+    <addaction name="actionHeaderLabels"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="menuAboutMessage"/>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuSettings_2"/>
+   <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen_file">
+  <action name="actionOpenFile">
    <property name="text">
     <string>Open file...</string>
    </property>
-  </action>
-  <action name="actionClose_file">
-   <property name="text">
-    <string>Close file</string>
+   <property name="toolTip">
+    <string>Open file...</string>
    </property>
   </action>
-  <action name="menuQuit">
+  <action name="actionQuit">
    <property name="text">
-    <string>Exit</string>
+    <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit</string>
    </property>
    <property name="menuRole">
     <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
-  <action name="actionComma">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Comma</string>
-   </property>
-  </action>
-  <action name="actionSemicolon">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Semicolon</string>
-   </property>
-  </action>
-  <action name="actionSpace">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Space</string>
-   </property>
-  </action>
-  <action name="actionTab">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Tab</string>
-   </property>
-  </action>
-  <action name="actionDouble_quote">
-   <property name="text">
-    <string>Double-quote</string>
-   </property>
-  </action>
-  <action name="actionSingle_quote">
-   <property name="text">
-    <string>Single-quote</string>
-   </property>
-  </action>
-  <action name="actionPreferences">
-   <property name="text">
-    <string>Preferences...</string>
-   </property>
-  </action>
-  <action name="menuSettings">
-   <property name="text">
-    <string>Settings...</string>
-   </property>
-  </action>
-  <action name="menuOpen">
-   <property name="text">
-    <string>Open...</string>
-   </property>
-  </action>
-  <action name="menuFieldSeparator">
+  <action name="actionFieldSeparator">
    <property name="text">
     <string>Field separator...</string>
    </property>
   </action>
-  <action name="menuTextDelimiter">
+  <action name="actionTextDelimiter">
    <property name="text">
     <string>Text delimiter...</string>
    </property>
   </action>
-  <action name="menuVerticalHeader">
+  <action name="actionVerticalHeader">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -405,7 +354,7 @@
     <string>Vertical header</string>
    </property>
   </action>
-  <action name="menuHorizontalHeader">
+  <action name="actionHorizontalHeader">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -416,7 +365,7 @@
     <string>Horizontal header</string>
    </property>
   </action>
-  <action name="menuHeaderLabels">
+  <action name="actionHeaderLabels">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -424,8 +373,11 @@
     <string>Set header labels from first line</string>
    </property>
   </action>
-  <action name="menuAboutMessage">
+  <action name="actionAbout">
    <property name="text">
+    <string>About...</string>
+   </property>
+   <property name="toolTip">
     <string>About...</string>
    </property>
   </action>
@@ -437,8 +389,6 @@
   <tabstop>lstColumns</tabstop>
   <tabstop>lstSearchResults</tabstop>
  </tabstops>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -1,6 +1,14 @@
 bwCSV - What's New?
 -------------------
 
+Version 1.1.0
+- Action icons
+- Enable/disable widgets based on user actions
+- Drag-and-drop
+- New style PyQt signals
+- Version numbering changed
+- Window geometry is now saved
+
 Version 1.01
 - Runs search when refreshing table.
 - Settings are now handled using Qt's QSettings.

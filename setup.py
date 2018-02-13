@@ -11,24 +11,33 @@ from cx_Freeze import setup, Executable, build_exe
 
 # Build options
 buildOptions = dict(
-    create_shared_zip = False)
+    create_shared_zip = False
+)
 
 # Platform specific
-script = "main.py"
 if sys.platform == 'win32':
-    exe = Executable(script, appendScriptToExe = True,
-                    appendScriptToLibrary = False, base = "Win32GUI",
-                    targetDir = "build", targetName = "bwCSV.exe",
-                    icon = "icon.ico")
+    exe = Executable(
+        appendScriptToExe = True,
+        appendScriptToLibrary = False,
+        base = "Win32GUI",
+        icon = "icon.ico",
+        script = "main.py",
+        targetDir = "build",
+        targetName = "bwCSV.exe"
+    )
 else:
-    exe = Executable(script, targetDir = "build", targetName = "bwCSV")
+    exe = Executable(
+        script = "main.py",
+        targetDir = "build",
+        targetName = "bwCSV"
+    )
 
 # Setup
 setup(
-    name = "bwCSV",
-    version = "1.01",
-    description = "A lightweight application to view CSV files.",
     author = 'bulkware',
+    description = "A lightweight application to view CSV files.",
+    name = "bwCSV",
+    version = "1.1.0",
     options = dict(build_exe = buildOptions),
-    executables = [exe])
-
+    executables = [exe]
+)

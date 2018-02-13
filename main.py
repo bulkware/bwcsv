@@ -27,13 +27,16 @@ class Main(QtGui.QMainWindow):
     def __init__(self):
 
         # Declare class variables
-        self.file = None # Variable for file
+        self.file = "" # Variable for file
         self.searchresults = [] # A list for search results
         self.fieldseparator = chr(44) # Field separator
         self.textdelimiter = chr(34) # Text delimiter
         self.hheader = True # Boolean for horizontal header
         self.vheader = True # Boolean for vertical header
         self.hlabels = False # Boolean for header labels
+
+        # Create an instance of CSVParser
+        self.csvparser = CSVParser()
 
         # Initialize top level window widget
         QtGui.QMainWindow.__init__(self)
@@ -43,66 +46,37 @@ class Main(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         # Connect signals, menu
-        QtCore.QObject.connect(self.ui.menuOpen,
-            QtCore.SIGNAL('triggered()'), self.openFile)
-        QtCore.QObject.connect(self.ui.menuQuit,
-            QtCore.SIGNAL('triggered()'), self.quitApplication)
-        QtCore.QObject.connect(self.ui.menuFieldSeparator,
-            QtCore.SIGNAL('triggered()'), self.fieldSeparator)
-        QtCore.QObject.connect(self.ui.menuTextDelimiter,
-            QtCore.SIGNAL('triggered()'), self.textDelimiter)
-        QtCore.QObject.connect(self.ui.menuHorizontalHeader,
-            QtCore.SIGNAL('triggered()'), self.horizontalHeader)
-        QtCore.QObject.connect(self.ui.menuVerticalHeader,
-            QtCore.SIGNAL('triggered()'), self.verticalHeader)
-        QtCore.QObject.connect(self.ui.menuHeaderLabels,
-            QtCore.SIGNAL('triggered()'), self.headerLabels)
-        QtCore.QObject.connect(self.ui.menuAboutMessage,
-            QtCore.SIGNAL('triggered()'), self.aboutMessage)
+        self.ui.actionOpenFile.triggered.connect(self.openFile)
+        self.ui.actionFieldSeparator.triggered.connect(self.fieldSeparator)
+        self.ui.actionTextDelimiter.triggered.connect(self.textDelimiter)
+        self.ui.actionHorizontalHeader.triggered.connect(self.horizontalHeader)
+        self.ui.actionVerticalHeader.triggered.connect(self.verticalHeader)
+        self.ui.actionHeaderLabels.triggered.connect(self.headerLabels)
+        self.ui.actionQuit.triggered.connect(self.quitApplication)
+        self.ui.actionAbout.triggered.connect(self.aboutMessage)
 
         # Connect signals, search
-        QtCore.QObject.connect(self.ui.txtSearch,
-            QtCore.SIGNAL('returnPressed()'), self.searchFromTable)
-        QtCore.QObject.connect(self.ui.lstSearchResults,
-            QtCore.SIGNAL("itemClicked (QListWidgetItem *)"),
-            self.selectSearchResult)
+        self.ui.txtSearch.returnPressed.connect(self.searchFromTable)
+        self.ui.lstSearchResults.itemClicked.connect(self.selectSearchResult)
 
-        # Create an instance of list
-        self.csvparser = CSVParser()
+        # Drag-and-drop events for file contents table
+        self.ui.tblContents.dragEnterEvent = self.dragEnterEvent
+        self.ui.tblContents.dragMoveEvent = self.dragEnterEvent
+        self.ui.tblContents.dropEvent = self.dropEvent
+
+        # Icons
+        self.setWindowIcon(QtGui.QIcon("icon.png"))
+        self.ui.actionOpenFile.setIcon(QtGui.QIcon("open_file.png"))
+        self.ui.actionFieldSeparator.setIcon(QtGui.QIcon("fseparator.png"))
+        self.ui.actionTextDelimiter.setIcon(QtGui.QIcon("tdelimiter.png"))
+        self.ui.actionHorizontalHeader.setIcon(QtGui.QIcon("hheader.png"))
+        self.ui.actionVerticalHeader.setIcon(QtGui.QIcon("vheader.png"))
+        self.ui.actionHeaderLabels.setIcon(QtGui.QIcon("setheader.png"))
+        self.ui.actionQuit.setIcon(QtGui.QIcon("quit.png"))
+        self.ui.actionAbout.setIcon(QtGui.QIcon("about.png"))
 
         # Load settings
-        try:
-            settings = QtCore.QSettings("bulkware", "bwCSV")
-            if settings.contains("file"):
-                self.file = settings.value("file", type=str)
-            if settings.contains("fieldseparator"):
-                self.fieldseparator = settings.value("fieldseparator", type=str)
-            if settings.contains("textdelimiter"):
-                self.textdelimiter = settings.value("textdelimiter", type=str)
-            if settings.contains("horizontalheader"):
-                self.hheader = settings.value("horizontalheader", type=bool)
-            if settings.contains("verticalheader"):
-                self.vheader = settings.value("verticalheader", type=bool)
-            if settings.contains("headerlabels"):
-                self.hlabels = settings.value("headerlabels", type=bool)
-            if settings.contains("windowstate"):
-                windowstate = settings.value("windowstate", type=int)
-                if windowstate == 1:
-                    self.setWindowState(QtCore.Qt.WindowMinimized)
-                elif windowstate == 2:
-                    self.setWindowState(QtCore.Qt.WindowMaximized)
-
-        # Error occured, set default settings
-        except:
-            self.file = None
-            self.fieldseparator = chr(44)
-            self.textdelimiter = chr(34)
-            self.hheader = True
-            self.vheader = True
-            self.hlabels = False
-
-        finally:
-            pass
+        self.loadSettings()
 
         # Set file if it's in the command line arguments
         if len(sys.argv) > 1:
@@ -112,26 +86,27 @@ class Main(QtGui.QMainWindow):
         # Set horizontal header to table
         if not self.hheader:
             self.hlabels = False
-            self.ui.menuHeaderLabels.setEnabled(False)
-            self.ui.menuHorizontalHeader.setChecked(False)
+            self.ui.actionHeaderLabels.setEnabled(False)
+            self.ui.actionHorizontalHeader.setChecked(False)
             self.ui.tblContents.horizontalHeader().setVisible(False)
 
         # Set vertical header to table
         if not self.vheader:
-            self.ui.menuVerticalHeader.setChecked(False)
+            self.ui.actionVerticalHeader.setChecked(False)
             self.ui.tblContents.verticalHeader().setVisible(False)
 
         # Set header labels checked
         if self.hlabels:
-            self.ui.menuHeaderLabels.setChecked(True)
+            self.ui.actionHeaderLabels.setChecked(True)
 
         # Open CSV file
-        if self.file and self.file != "":
-            if self.openCSV(self.file):
-                pass
-            else:
-                self.file = None
+        if self.file != "":
+            self.openCSV(self.file)
 
+
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    #+ Actions
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     # A method to show "open file"-dialog
     def openFile(self):
@@ -149,26 +124,199 @@ class Main(QtGui.QMainWindow):
     def openCSV(self, file):
 
 		# Try to load file
-        loadfile = self.csvparser.load_file(file, self.fieldseparator,
-                                            self.textdelimiter)
-        if loadfile:
+        ok = self.csvparser.load_file(file, self.fieldseparator, 
+            self.textdelimiter)
+        if ok:
             self.file = file
             self.setWindowTitle("bwCSV - " + os.path.basename(self.file))
+            self.ui.statusBar.showMessage(self.csvparser.message)
+            self.enableWidgets()
         else:
             self.ui.statusBar.showMessage(self.csvparser.message)
             QtGui.QMessageBox.critical(self, "Error", self.csvparser.message)
+            if self.file == "":
+                self.disableWidgets()
             return False
 
         # Populate table widget
-        if self.refreshTable():
-            self.ui.statusBar.showMessage(self.csvparser.message)
-            return True
-        else:
-            message = "Error: unable to refresh table."
-            QtGui.QMessageBox.critical(self, "Error", message)
-            self.ui.statusBar.showMessage(message)
-            return False
+        self.refreshTable()
 
+
+    # Set field separator
+    def fieldSeparator(self):
+
+        # Get user input
+        fieldseparator, ok = QtGui.QInputDialog.getText(self,
+            "Field separator", "Field separator:", 0, self.fieldseparator)
+
+        # If OK was clicked...
+        if ok:
+            if fieldseparator == "":
+                QtGui.QMessageBox.critical(self, "Error",
+                    "Field separator cannot be empty.")
+                return False
+
+            # Set new field separator
+            self.fieldseparator = fieldseparator
+
+            # Reload file if a file is opened
+            if self.file != "":
+                self.openCSV(self.file)
+
+
+    # Set text delimiter
+    def textDelimiter(self):
+
+        # Get user input
+        textdelimiter, ok = QtGui.QInputDialog.getText(self, "Text delimiter",
+            "Text delimiter:", 0, self.textdelimiter)
+
+        # If OK was clicked...
+        if ok:
+
+            # Set new text delimiter
+            self.textdelimiter = textdelimiter
+
+            # Reload file if a file is opened
+            if self.file != "":
+                self.openCSV(self.file)
+
+
+    # Show/hide horizontal header
+    def horizontalHeader(self):
+
+        if self.ui.actionHorizontalHeader.isChecked():
+            self.hheader = True
+            self.ui.actionHeaderLabels.setEnabled(True)
+            self.ui.tblContents.horizontalHeader().setVisible(True)
+        else:
+            self.hlabels = False
+            self.hheader = False
+            self.ui.actionHeaderLabels.setChecked(False)
+            self.ui.actionHeaderLabels.setEnabled(False)
+            self.ui.actionHorizontalHeader.setChecked(False)
+            self.ui.tblContents.horizontalHeader().setVisible(False)
+
+            # Refresh table if a file is opened
+            if self.file != "":
+                self.refreshTable()
+
+
+    # Show/hide vertical header
+    def verticalHeader(self):
+
+        if self.ui.actionVerticalHeader.isChecked():
+            self.vheader = True
+            self.ui.tblContents.verticalHeader().setVisible(True)
+        else:
+            self.vheader = False
+            self.ui.tblContents.verticalHeader().setVisible(False)
+
+
+    # Header labels enable/disable
+    def headerLabels(self):
+
+        if self.ui.actionHeaderLabels.isChecked():
+            self.hlabels = True
+        else:
+            self.hlabels = False
+
+        # Refresh table and search if a file is opened
+        if self.file != "":
+            self.refreshTable()
+
+
+    # About message
+    def aboutMessage(self):
+        message = """<strong>bwCSV</strong><br />
+        Version 1.1.0<br />
+        <br />
+        This is free software.<br />
+        Released under the General Public License.<br />
+        <br />
+        <a href="http://sourceforge.net/projects/bwcsv/">SourceForge</a>"""
+        QtGui.QMessageBox.about(self, "About", message)
+
+
+    # Quit application
+    def quitApplication(self):
+        QtGui.QApplication.quit()
+
+
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    #+ Events
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    # Drag
+    def dragEnterEvent(self, event):
+        if (event.type() == QtCore.QEvent.DragEnter):
+            if event.mimeData().hasUrls():
+                event.accept()
+            else:
+                event.ignore()
+
+    # Drop
+    def dropEvent(self, event):
+        if (event.type() == QtCore.QEvent.Drop):
+            if event.mimeData().hasUrls():
+
+                # Take the first item from drag-and-drop and open it
+                item = event.mimeData().urls()[0]
+                self.openCSV(item.toLocalFile())
+                
+
+
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    #+ Settings
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    def loadSettings(self):
+        try:
+            settings = QtCore.QSettings("bulkware", "bwCSV")
+            if settings.contains("geometry"): # Window geometry
+                self.restoreGeometry(settings.value("geometry"))
+            if settings.contains("state"): # Window state
+                self.restoreState(settings.value("state"))
+            if settings.contains("file"):
+                self.file = settings.value("file", type=str)
+            if settings.contains("fieldseparator"):
+                self.fieldseparator = settings.value("fieldseparator", type=str)
+            if settings.contains("textdelimiter"):
+                self.textdelimiter = settings.value("textdelimiter", type=str)
+            if settings.contains("horizontalheader"):
+                self.hheader = settings.value("horizontalheader", type=bool)
+            if settings.contains("verticalheader"):
+                self.vheader = settings.value("verticalheader", type=bool)
+            if settings.contains("headerlabels"):
+                self.hlabels = settings.value("headerlabels", type=bool)
+        except:
+            self.file = ""
+            self.fieldseparator = chr(44)
+            self.textdelimiter = chr(34)
+            self.hheader = True
+            self.vheader = True
+            self.hlabels = False
+            return False
+        else:
+            return True
+
+
+    # Save settings when closing the application
+    def closeEvent(self, event):
+        settings = QtCore.QSettings("bulkware", "bwCSV")
+        settings.setValue("geometry", self.saveGeometry())
+        settings.setValue("state", self.saveState())
+        settings.setValue("file", self.file)
+        settings.setValue("fieldseparator", self.fieldseparator)
+        settings.setValue("textdelimiter", self.textdelimiter)
+        settings.setValue("horizontalheader", self.hheader)
+        settings.setValue("verticalheader", self.vheader)
+        settings.setValue("headerlabels", self.hlabels)
+
+
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    #+ Widgets
+    #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
     # A method to refresh table
     def refreshTable(self):
@@ -224,93 +372,6 @@ class Main(QtGui.QMainWindow):
         searchstring = str(self.ui.txtSearch.text())
         if self.ui.txtSearch.text() != "":
             self.searchFromTable()
-
-        # All went well
-        return True
-
-
-    # Set field separator
-    def fieldSeparator(self):
-
-        # Get user input
-        fieldseparator, ok = QtGui.QInputDialog.getText(self,
-            "Field separator", "Field separator:", 0, self.fieldseparator)
-
-        # If OK was clicked...
-        if ok:
-            if fieldseparator == "":
-                QtGui.QMessageBox.critical(self, "Error",
-                    "Field separator cannot be empty.")
-                return False
-
-            # Set new field separator
-            self.fieldseparator = fieldseparator
-
-            # Reload file if a file is opened
-            if self.file != "":
-                self.openCSV(self.file)
-
-
-    # Set text delimiter
-    def textDelimiter(self):
-
-        # Get user input
-        textdelimiter, ok = QtGui.QInputDialog.getText(self, "Text delimiter",
-            "Text delimiter:", 0, self.textdelimiter)
-
-        # If OK was clicked...
-        if ok:
-
-            # Set new text delimiter
-            self.textdelimiter = textdelimiter
-
-            # Reload file if a file is opened
-            if self.file and self.file != "":
-                self.openCSV(self.file)
-
-
-    # Show/hide horizontal header
-    def horizontalHeader(self):
-
-        if self.ui.menuHorizontalHeader.isChecked():
-            self.hheader = True
-            self.ui.menuHeaderLabels.setEnabled(True)
-            self.ui.tblContents.horizontalHeader().setVisible(True)
-        else:
-            self.hlabels = False
-            self.hheader = False
-            self.ui.menuHeaderLabels.setChecked(False)
-            self.ui.menuHeaderLabels.setEnabled(False)
-            self.ui.menuHorizontalHeader.setChecked(False)
-            self.ui.tblContents.horizontalHeader().setVisible(False)
-
-            # Refresh table if a file is opened
-            if self.file and self.file != "":
-                self.refreshTable()
-
-
-    # Show/hide vertical header
-    def verticalHeader(self):
-
-        if self.ui.menuVerticalHeader.isChecked():
-            self.vheader = True
-            self.ui.tblContents.verticalHeader().setVisible(True)
-        else:
-            self.vheader = False
-            self.ui.tblContents.verticalHeader().setVisible(False)
-
-
-    # Header labels enable/disable
-    def headerLabels(self):
-
-        if self.ui.menuHeaderLabels.isChecked():
-            self.hlabels = True
-        else:
-            self.hlabels = False
-
-        # Refresh table and search if a file is opened
-        if self.file and self.file != "":
-            self.refreshTable()
 
 
     # Search method
@@ -392,35 +453,18 @@ class Main(QtGui.QMainWindow):
             self.ui.tblContents.setFocus()
 
 
-    # About message
-    def aboutMessage(self):
-        message = """<strong>bwCSV</strong><br />
-        Version 1.01<br />
-        <br />
-        This is free software.<br />
-        Released under the General Public Licence.<br />
-        <br />
-        <a href="http://sourceforge.net/projects/bwcsv/">SourceForge</a>"""
-        QtGui.QMessageBox.about(self, "About", message)
+    # Disable widgets
+    def disableWidgets(self):
+        self.ui.txtSearch.setEnabled(False)
+        self.ui.lstColumns.setEnabled(False)
+        self.ui.lstSearchResults.setEnabled(False)
 
 
-    # Closing the application
-    def closeEvent(self, event):
-
-        # Save settings
-        settings = QtCore.QSettings("bulkware", "bwCSV")
-        settings.setValue("file", self.file)
-        settings.setValue("fieldseparator", self.fieldseparator)
-        settings.setValue("textdelimiter", self.textdelimiter)
-        settings.setValue("horizontalheader", self.hheader)
-        settings.setValue("verticalheader", self.vheader)
-        settings.setValue("headerlabels", self.hlabels)
-        settings.setValue("windowstate", int(self.windowState()))
-
-
-    # Quit application
-    def quitApplication(self):
-        QtGui.QApplication.quit()
+    # Enable widgets
+    def enableWidgets(self):
+        self.ui.txtSearch.setEnabled(True)
+        self.ui.lstColumns.setEnabled(True)
+        self.ui.lstSearchResults.setEnabled(True)
 
 
 # Creates an application object and begins the event handling loop

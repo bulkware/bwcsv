@@ -1,0 +1,9 @@
+bwCSV - Icons
+-------------
+
+Oxygen icon set
+- Description: KDE icon theme.
+- Download: ftp://ftp.kde.org/
+- License: LGPL
+- Website: http://www.oxygen-icons.org/
+- Version: 4.12.1
