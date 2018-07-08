@@ -229,7 +229,7 @@ class Main(QtGui.QMainWindow):
     # About message
     def aboutMessage(self):
         message = """<strong>bwCSV</strong><br />
-        Version 1.1.0<br />
+        Version 1.1.1<br />
         <br />
         This is free software.<br />
         Released under the General Public License.<br />

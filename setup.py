@@ -37,7 +37,7 @@ setup(
     author = 'bulkware',
     description = "A lightweight application to view CSV files.",
     name = "bwCSV",
-    version = "1.1.0",
+    version = "1.1.1",
     options = dict(build_exe = buildOptions),
     executables = [exe]
 )
