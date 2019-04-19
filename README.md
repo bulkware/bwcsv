@@ -25,8 +25,8 @@ grid. You can use the search to locate specific strings from the open file.
 ### File > Open...
 Opens a CSV-file.
 
-### File > Exit
-Exits the application.
+### File > Quit
+Quits the application.
 
 ### Settings > Field separator...
 Set the field separator to use when opening CSV-files. Field separator is the

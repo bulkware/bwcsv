@@ -229,12 +229,12 @@ class Main(QtGui.QMainWindow):
     # About message
     def aboutMessage(self):
         message = """<strong>bwCSV</strong><br />
-        Version 1.1.1<br />
+        Version 1.2.0<br />
         <br />
         This is free software.<br />
         Released under the General Public License.<br />
         <br />
-        <a href="http://sourceforge.net/projects/bwcsv/">SourceForge</a>"""
+        <a href="https://github.com/bulkware/bwcsv">GitHub</a>"""
         QtGui.QMessageBox.about(self, "About", message)
 
 
