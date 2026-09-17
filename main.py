@@ -8,8 +8,8 @@ import configparser # Configuration file parser
 import os # Miscellaneous operating system interfaces
 import sys # System-specific parameters and functions
 
-# Import PyQt modules
-from PyQt4 import QtCore, QtGui
+# Import PyQt6 modules
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 # Application classes
 from csvparser import CSVParser # A class to handle CSV files
@@ -21,7 +21,7 @@ import functions # Useful functions
 from mainwindow import *
 
 # Create a class for our mainwindow
-class Main(QtGui.QMainWindow):
+class Main(QtWidgets.QMainWindow):
 
     # Initialize mainwindow
     def __init__(self):
@@ -39,7 +39,7 @@ class Main(QtGui.QMainWindow):
         self.csvparser = CSVParser()
 
         # Initialize top level window widget
-        QtGui.QMainWindow.__init__(self)
+        super().__init__()
 
         # This is always the same
         self.ui = Ui_MainWindow()
@@ -112,7 +112,7 @@ class Main(QtGui.QMainWindow):
     def openFile(self):
 
         # Path to file using a dialog
-        file = QtGui.QFileDialog.getOpenFileName(self, "Open CSV file",
+        file, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open CSV file",
             self.file, self.tr("CSV files (*.csv)"))
 
         # Open file
@@ -133,7 +133,7 @@ class Main(QtGui.QMainWindow):
             self.enableWidgets()
         else:
             self.ui.statusBar.showMessage(self.csvparser.message)
-            QtGui.QMessageBox.critical(self, "Error", self.csvparser.message)
+            QtWidgets.QMessageBox.critical(self, "Error", self.csvparser.message)
             if self.file == "":
                 self.disableWidgets()
             return False
@@ -146,13 +146,14 @@ class Main(QtGui.QMainWindow):
     def fieldSeparator(self):
 
         # Get user input
-        fieldseparator, ok = QtGui.QInputDialog.getText(self,
-            "Field separator", "Field separator:", 0, self.fieldseparator)
+        fieldseparator, ok = QtWidgets.QInputDialog.getText(
+            self, "Field separator", "Field separator:",
+            QtWidgets.QLineEdit.EchoMode.Normal, self.fieldseparator)
 
         # If OK was clicked...
         if ok:
             if fieldseparator == "":
-                QtGui.QMessageBox.critical(self, "Error",
+                QtWidgets.QMessageBox.critical(self, "Error",
                     "Field separator cannot be empty.")
                 return False
 
@@ -168,8 +169,9 @@ class Main(QtGui.QMainWindow):
     def textDelimiter(self):
 
         # Get user input
-        textdelimiter, ok = QtGui.QInputDialog.getText(self, "Text delimiter",
-            "Text delimiter:", 0, self.textdelimiter)
+        textdelimiter, ok = QtWidgets.QInputDialog.getText(
+            self, "Text delimiter", "Text delimiter:",
+            QtWidgets.QLineEdit.EchoMode.Normal, self.textdelimiter)
 
         # If OK was clicked...
         if ok:
@@ -235,12 +237,12 @@ class Main(QtGui.QMainWindow):
         Released under the General Public License.<br />
         <br />
         <a href="https://github.com/bulkware/bwcsv">GitHub</a>"""
-        QtGui.QMessageBox.about(self, "About", message)
+        QtWidgets.QMessageBox.about(self, "About", message)
 
 
     # Quit application
     def quitApplication(self):
-        QtGui.QApplication.quit()
+        QtWidgets.QApplication.quit()
 
 
     #+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -249,7 +251,7 @@ class Main(QtGui.QMainWindow):
 
     # Drag
     def dragEnterEvent(self, event):
-        if (event.type() == QtCore.QEvent.DragEnter):
+        if event.type() == QtCore.QEvent.Type.DragEnter:
             if event.mimeData().hasUrls():
                 event.accept()
             else:
@@ -257,7 +259,7 @@ class Main(QtGui.QMainWindow):
 
     # Drop
     def dropEvent(self, event):
-        if (event.type() == QtCore.QEvent.Drop):
+        if event.type() == QtCore.QEvent.Type.Drop:
             if event.mimeData().hasUrls():
 
                 # Take the first item from drag-and-drop and open it
@@ -349,9 +351,9 @@ class Main(QtGui.QMainWindow):
         # Populate table widget
         for row, line in enumerate(self.csvparser.filedata[pos1:pos2]):
             for column in range(columns):
-                item = QtGui.QTableWidgetItem(line[column])
-                item.setFlags(QtCore.Qt.ItemIsSelectable |
-                              QtCore.Qt.ItemIsEnabled)
+                item = QtWidgets.QTableWidgetItem(line[column])
+                item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                              QtCore.Qt.ItemFlag.ItemIsEnabled)
                 self.ui.tblContents.setItem(row, column, item)
 
         # Add columns to column list
@@ -379,13 +381,13 @@ class Main(QtGui.QMainWindow):
 
         # No file opened
         if self.file == "":
-            QtGui.QMessageBox.critical(self, "Error", "No file opened.")
+            QtWidgets.QMessageBox.critical(self, "Error", "No file opened.")
             return False
 
         # No search string specified
         searchstring = str(self.ui.txtSearch.text())
         if searchstring == "":
-            QtGui.QMessageBox.critical(self, "Error",
+            QtWidgets.QMessageBox.critical(self, "Error",
                 "No search string specified.")
             return False
 
@@ -428,7 +430,7 @@ class Main(QtGui.QMainWindow):
                                         wholeword):
                     self.ui.tblContents.scrollToItem(
                         self.ui.tblContents.item(row, column),
-                        QtGui.QAbstractItemView.EnsureVisible)
+                        QtWidgets.QAbstractItemView.ScrollHint.EnsureVisible)
                     self.ui.lstSearchResults.addItem("Row " + str(row + 1) +
                         ", column " + str(column + 1))
                     self.searchresults.append([row, column])
@@ -449,7 +451,7 @@ class Main(QtGui.QMainWindow):
             self.ui.tblContents.setCurrentCell(pos1, pos2)
             self.ui.tblContents.scrollToItem(
                 self.ui.tblContents.item(pos1, pos2),
-                QtGui.QAbstractItemView.EnsureVisible)
+                QtWidgets.QAbstractItemView.ScrollHint.EnsureVisible)
             self.ui.tblContents.setFocus()
 
 
@@ -469,8 +471,8 @@ class Main(QtGui.QMainWindow):
 
 # Creates an application object and begins the event handling loop
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = Main()
     window.show()
-    ret = app.exec_()
+    ret = app.exec()
     sys.exit(ret)

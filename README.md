@@ -54,7 +54,10 @@ Application information.
 
 ### Installing dependencies (Debian-based systems)
 Open your terminal application and type:
-`sudo apt-get install python3 python3-pyqt4`
+`sudo apt-get install python3 python3-pyqt6`
+
+Alternatively, install the project dependency with:
+`python3 -m pip install -r requirements.txt`
 
 Hit enter. Enter your password when prompted. Answer yes to the question about
 using additional disk space.
