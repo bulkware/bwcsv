@@ -98,10 +98,8 @@ class CSVParser(object):
         except:
             self.message = "Error: unable to open file."
 
-        finally:
+        if self.success:
+            self.message = "File opened successfully."
+            return True
 
-            if self.success:
-                self.message = "File opened successfully."
-                return True
-            else:
-                return False
+        return False
