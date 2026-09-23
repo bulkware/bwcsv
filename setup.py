@@ -38,6 +38,7 @@ setup(
     description = "A lightweight application to view CSV files.",
     name = "bwCSV",
     version = "1.2.0",
+    install_requires = ["PySide6>=6.0"],
     options = dict(build_exe = buildOptions),
     executables = [exe]
 )

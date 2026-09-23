@@ -38,6 +38,6 @@ COPY /Y "gpl.txt" "build"
 COPY /Y "icons.txt" "build"
 COPY /Y "license.txt" "build"
 COPY /Y "README.md" "build"
-COPY /Y "whats_new.txt" "build"
+COPY /Y "CHANGELOG.md" "build"
 
 ECHO.
