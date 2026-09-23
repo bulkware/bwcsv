@@ -8,8 +8,8 @@ import configparser # Configuration file parser
 import os # Miscellaneous operating system interfaces
 import sys # System-specific parameters and functions
 
-# Import PyQt6 modules
-from PyQt6 import QtCore, QtGui, QtWidgets
+# Import PySide6 modules
+from PySide6 import QtCore, QtGui, QtWidgets
 
 # Application classes
 from csvparser import CSVParser # A class to handle CSV files
