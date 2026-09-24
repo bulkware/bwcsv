@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+# Desktop integration is intentionally outside the Python wheel.
+override_dh_auto_install:
+	dh_auto_install
+	install -D -m 644 data/org.bulkware.bwcsv.desktop \
+		debian/bwcsv/usr/share/applications/org.bulkware.bwcsv.desktop
+	install -D -m 644 data/org.bulkware.bwcsv.metainfo.xml \
+		debian/bwcsv/usr/share/metainfo/org.bulkware.bwcsv.metainfo.xml
+	install -D -m 644 data/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png \
+		debian/bwcsv/usr/share/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png

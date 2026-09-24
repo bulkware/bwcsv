@@ -1,15 +1,13 @@
 # !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-# Python imports
-import re # Regular expression operations
+import re
 
 # A function to find strings
 def find_string(search, subject, ignorecase=False, wholeword=False):
     """ A function to find a string from another string. Complete with ignore
         text case and whole word search. """
 
-    # Search or subject cannot be empty
+    # An empty query has no useful match and avoids surprising every-cell hits.
     if search == "" or subject == "":
         return False
 

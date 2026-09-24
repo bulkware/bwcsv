@@ -9,6 +9,7 @@ __pycache__/
 # Packaging and build output
 build/
 dist/
+release-artifacts/
 *.egg-info/
 .eggs/
 *.egg

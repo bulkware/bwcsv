@@ -1,0 +1,17 @@
+# Debian's source package definition; runtime desktop files are installed from
+# debian/rules rather than bundled in the Python wheel.
+Source: bwcsv
+Section: utils
+Priority: optional
+Maintainer: Antti-Pekka Meronen <antice@kapsi.fi>
+Build-Depends: appstream, debhelper-compat (= 13), dh-python, pybuild-plugin-pyproject,
+ python3-all, python3-pyside6.qtwidgets, python3-setuptools
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+
+Package: bwcsv
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, python3-pyside6.qtwidgets
+Description: Lightweight desktop application for viewing CSV files
+ bwCSV displays comma-separated value files in a searchable table and lets users
+ select delimiters and table headers.

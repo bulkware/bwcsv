@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <!-- Keep this identifier aligned with the desktop file and installed icon. -->
+  <id>org.bulkware.bwcsv</id>
+  <name>bwCSV</name>
+  <summary>View comma-separated value files</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="org.bulkware">
+    <name>Bulkware</name>
+  </developer>
+  <description>
+    <p>
+      bwCSV is a lightweight application for viewing comma-separated value files,
+      searching their contents, and choosing their separators and headers.
+    </p>
+  </description>
+  <categories>
+    <category>Office</category>
+    <category>Utility</category>
+  </categories>
+  <launchable type="desktop-id">org.bulkware.bwcsv.desktop</launchable>
+  <provides>
+    <binary>bwcsv</binary>
+    <mediatype>text/csv</mediatype>
+  </provides>
+  <url type="homepage">https://github.com/bulkware/bwcsv</url>
+  <releases>
+    <release version="1.5.0" date="2026-09-23"/>
+    <release version="1.4.0" date="2026-09-23"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>

@@ -1,0 +1,101 @@
+# This file is the single packaging authority for Python, Windows, and native
+# package build metadata.
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bwCSV"
+version = "1.5.0"
+description = "A lightweight desktop application for viewing CSV files."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE.md"]
+authors = [{ name = "Antti-Pekka Meronen", email = "antice@kapsi.fi" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Office/Business",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = ["PySide6>=6.0"]
+
+[project.scripts]
+bwcsv = "bwcsv.main:main"
+
+[project.urls]
+"Bug Reports" = "https://github.com/bulkware/bwcsv/issues"
+Source = "https://github.com/bulkware/bwcsv"
+
+[project.optional-dependencies]
+dev = ["pylint>=3.0"]
+release = ["build>=1.2", "cx-Freeze>=8.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+bwcsv = ["assets/*.png"]
+
+# cx_Freeze creates the portable directory; the Windows wrapper archives it and
+# uses the same inputs to produce an MSI installer.
+[[tool.cxfreeze.executables]]
+script = "src/freeze_entry.py"
+base = "gui"
+target-name = "bwCSV"
+icon = "data/icons/bwcsv.ico"
+shortcut-name = "bwCSV"
+shortcut-dir = "bwCSVMenu"
+copyright = "Copyright (C) 2026 Bulkware"
+
+[tool.cxfreeze.build_exe]
+build-exe = "build/windows/bwCSV"
+include-files = [["src/bwcsv/assets", "assets"]]
+include-msvcr = true
+packages = ["shiboken6"]
+includes = ["zlib"]
+zip-exclude-packages = ["*"]
+
+[tool.cxfreeze.bdist_msi]
+dist-dir = "build/windows/installer"
+product-name = "bwCSV"
+initial-target-dir = "[LocalAppDataFolder]Programs\\bwCSV"
+install-icon = "data/icons/bwcsv.ico"
+launch-on-finish = true
+upgrade-code = "{65D1A6B3-5672-4FD1-BD5A-A8589CC0F19E}"
+
+[tool.cxfreeze.bdist_msi.data]
+Directory = [
+    ["ProgramMenuFolder", "TARGETDIR", "."],
+    ["bwCSVMenu", "ProgramMenuFolder", "BWCSV~1|bwCSV"],
+]
+
+[tool.pylint.main]
+py-version = "3.11"
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint."messages control"]
+disable = [
+    "bare-except",
+    "c-extension-no-member",
+    "consider-using-f-string",
+    "inconsistent-return-statements",
+    "invalid-name",
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "no-else-return",
+    "simplifiable-if-statement",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "too-many-return-statements",
+    "too-few-public-methods",
+    "trailing-whitespace",
+    "unused-argument",
+    "unused-variable",
+    "useless-object-inheritance",
+]

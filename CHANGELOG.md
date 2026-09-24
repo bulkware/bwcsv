@@ -2,7 +2,15 @@
 
 All notable changes to bwCSV will be documented in this file.
 
-## [1.4.0]
+## [1.5.0] - 2026-09-23
+
+### Changed
+
+- GitHub Actions CI package building.
+- Packaging system for Debian (.deb) and Red Hat (.rpm) based distros.
+- Renewed the Windows packaging system.
+
+## [1.4.0] - 2026-09-23
 
 ### Changed
 
