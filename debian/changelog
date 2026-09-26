@@ -1,0 +1,5 @@
+bwcsv (1.5.0-1) unstable; urgency=medium
+
+  * Packaging system for Debian (deb) and Red Hat (rpm) based distros.
+
+ -- Antti-Pekka Meronen <antice@kapsi.fi>  Wed, 23 Sep 2026 00:00:00 +0000

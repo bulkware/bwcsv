@@ -1,11 +1,10 @@
 # !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-""" A class to handle CSV files. """
+"""CSV-file loading support."""
 
 # Imports
-import csv # CSV File Reading and Writing
-import os # Miscellaneous operating system interfaces
+import csv
+import os
 
 # A class to handle CSV files
 class CSVParser(object):
@@ -59,43 +58,32 @@ class CSVParser(object):
             # Clear list
             self.filedata = []
 
-            # Create a file handle and open file using csv.reader
-            filehandle = open(file, "r")
-            csvfile = csv.reader(filehandle, delimiter=fieldseparator,
-                quotechar=textdelimiter)
+            # Read the CSV once so malformed rows can be rejected consistently.
+            with open(file, "r", encoding="utf-8-sig", newline="") as filehandle:
+                csvfile = csv.reader(
+                    filehandle, delimiter=fieldseparator, quotechar=textdelimiter
+                )
+                self.filedata = list(csvfile)
 
-            # Count the number of columns
-            self.columncount = len(next(csvfile))
+            if not self.filedata:
+                self.message = "Error: CSV file is empty."
+                return False
 
-            # Return position to zero
-            filehandle.seek(0)
+            self.columncount = len(self.filedata[0])
+            if any(len(line) != self.columncount for line in self.filedata):
+                self.message = "Error: CSV rows do not have a consistent number of columns."
+                self.filedata = []
+                return False
 
-            # Loop lines and append them into a list
-            for line in csvfile:
-                listline = []
-                for i in range(self.columncount):
-                    listline.append(line[i])
-
-                self.filedata.append(listline)
-                del(listline)
-
-            # Count the number of rows
-            self.rowcount = sum(1 for line in self.filedata)
-
-            # Discard variables
-            del(csvfile)
-
-            # Close file handle
-            if filehandle:
-                filehandle.close()
+            self.rowcount = len(self.filedata)
 
             # Successful file open
             self.success = True
 
-        except IOError as e:
+        except OSError as e:
             self.message = "I/O error({0}): {1}".format(e.errno, e.strerror)
 
-        except:
+        except (csv.Error, TypeError, UnicodeError):
             self.message = "Error: unable to open file."
 
         if self.success:

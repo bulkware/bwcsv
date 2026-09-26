@@ -1,6 +1,9 @@
-# bwcsv
+# bwCSV
 
-A lightweight application to view CSV files.
+Lightweight desktop application for viewing CSV files.
+
+bwCSV displays comma-separated value files in a searchable table and lets users select delimiters
+and table headers.
 
 
 ## What are CSV-files?
@@ -16,8 +19,8 @@ A CSV-file would look something like this:
 
 ## Getting started
 
-Open a file using the menu commands. File will be displayed on an Excel-like
-grid. You can use the search to locate specific strings from the open file.
+Open a file using the menu commands. File will be displayed on an Excel-like grid. You can use the
+search to locate specific strings from the open file.
 
 
 ## Menu commands
@@ -29,13 +32,12 @@ Opens a CSV-file.
 Quits the application.
 
 ### Settings > Field separator...
-Set the field separator to use when opening CSV-files. Field separator is the
-character that separates fields in CSV-files. The default is comma. Required.
+Set the field separator to use when opening CSV-files. Field separator is the character that
+separates fields in CSV-files. The default is comma. Required.
 
 ### Settings > Text delimiter...
-Set the text delimiter to use when opening CSV-files. Text delimiter is the
-character that is used to surround the field in CSV-files. The default is
-double-quote. Not required.
+Set the text delimiter to use when opening CSV-files. Text delimiter is the character that is used
+to surround the field in CSV-files. The default is double-quote. Not required.
 
 ### Settings > Horizontal header
 Enable/disable horizontal header of table.
@@ -50,21 +52,34 @@ When enabled, the first line of CSV-file is used as labels for table.
 Application information.
 
 
-## Running on Linux
+## Running from source
 
-### Installing dependencies (Debian-based systems)
-Open your terminal application and type:
-`sudo apt-get install python3 python3-pyside6`
+Install the project and its Python dependency:
 
-Alternatively, install the project dependency with:
-`python3 -m pip install -r requirements.txt`
+`python3 -m pip install -e .`
 
-Hit enter. Enter your password when prompted. Answer yes to the question about
-using additional disk space.
+Then run the application from a checkout:
 
-### Downloading the source
-git clone https://github.com/bulkware/bwcsv.git
+`PYTHONPATH=src python3 -m bwcsv.main path/to/file.csv`
 
-### Running the application
-You can run the application from the source code using this command:
-`python3 main.py`
+## Packages and releases
+
+The project builds native packages from the same source metadata:
+
+- Debian package: `make install-deb && make deb` (Debian/Ubuntu)
+- RPM package: `make install-rpm && make rpm` (Fedora/RHEL)
+- Windows MSI and portable ZIP: `make windows` on Windows
+
+Native package builds require their platform's build dependencies. Windows builds use cx_Freeze and
+produce an MSI plus a folder-based portable ZIP.
+
+GitHub Actions builds unsigned Windows, Debian, and RPM artifacts for matching version tags. Future
+SignPath integration will sign the Windows artifacts only.
+See [the code signing policy template](docs/CODE_SIGNING_POLICY.md).
+
+## Development
+
+`make check` runs the display-free tests and PyLint checks used by CI. `make coverage` reports
+application-code coverage, and `make clean-dry-run` previews generated files that `make clean`
+would remove. The Qt form is generated from `src/bwcsv/mainwindow.ui`; run
+`scripts/generate-ui.sh` after editing it.

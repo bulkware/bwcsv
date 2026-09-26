@@ -1,0 +1,26 @@
+name: CI
+
+# Validate changes only on release branches and pull requests; package creation
+# itself belongs to the tag-driven release workflow.
+on:
+  push:
+    branches: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the test environment
+        run: python -m pip install --upgrade pip .[dev]
+      - name: Run tests and static checks
+        run: make check
+      - name: Check maintained Python files compile
+        run: python -m compileall -q src tests scripts

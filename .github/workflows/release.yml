@@ -1,0 +1,94 @@
+name: Release
+
+# A version tag is the release boundary: all platform artifacts are built from
+# that exact commit before GitHub publishing is allowed.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  verify-release-tag:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Match the tag to project metadata
+        # Prevent accidentally publishing artifacts under a mismatched version.
+        run: |
+          version=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
+          test "$GITHUB_REF_NAME" = "v$version"
+
+  windows:
+    needs: verify-release-tag
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build unsigned Windows artifacts
+        shell: pwsh
+        run: ./scripts/build-windows.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            build/windows/*.zip
+            build/windows/installer/*.msi
+
+  debian:
+    needs: verify-release-tag
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Debian build dependencies
+        run: |
+          sudo apt-get update
+          make install-deb
+      - name: Build the Debian package
+        run: bash scripts/build-deb.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debian
+          path: build/deb/*.deb
+
+  rpm:
+    needs: verify-release-tag
+    runs-on: ubuntu-24.04
+    container: fedora:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install RPM build dependencies
+        run: make SUDO= install-rpm
+      - name: Build the RPM package
+        run: |
+          bash scripts/build-rpm.sh
+          mkdir -p build/release
+          cp build/rpm/rpmbuild/RPMS/noarch/*.rpm build/release/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rpm
+          path: build/release/*.rpm
+
+  publish:
+    needs: [windows, debian, rpm]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+      - name: Publish the unsigned release
+        # Re-running a failed workflow safely replaces only its release assets.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" --generate-notes
+          fi
+          gh release upload "$GITHUB_REF_NAME" release-artifacts/* --clobber

@@ -1,0 +1,12 @@
+[Desktop Entry]
+# This desktop identifier must match the AppStream component and StartupWMClass.
+Name=bwCSV
+Comment=Lightweight desktop application for viewing CSV files
+Icon=org.bulkware.bwcsv
+Exec=bwcsv %F
+Terminal=false
+Type=Application
+Categories=Office;
+Keywords=CSV;comma-separated values;spreadsheet;table;
+MimeType=text/csv;
+StartupWMClass=bwCSV

@@ -1,24 +1,24 @@
 # !/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-""" A lightweight application to view CSV files. """
+"""Lightweight desktop application for viewing CSV files."""
 
 # Python imports
-import configparser # Configuration file parser
-import os # Miscellaneous operating system interfaces
-import sys # System-specific parameters and functions
+import os
+import sys
 
 # Import PySide6 modules
 from PySide6 import QtCore, QtGui, QtWidgets
 
 # Application classes
-from csvparser import CSVParser # A class to handle CSV files
+from . import __version__
+from .csvparser import CSVParser
 
 # Application functions
-import functions # Useful functions
+from . import functions
 
 # Import mainwindow
-from mainwindow import *
+from .mainwindow import Ui_MainWindow
+from .resources import asset_path
 
 # Create a class for our mainwindow
 class Main(QtWidgets.QMainWindow):
@@ -65,15 +65,15 @@ class Main(QtWidgets.QMainWindow):
         self.ui.tblContents.dropEvent = self.dropEvent
 
         # Icons
-        self.setWindowIcon(QtGui.QIcon("icon.png"))
-        self.ui.actionOpenFile.setIcon(QtGui.QIcon("open_file.png"))
-        self.ui.actionFieldSeparator.setIcon(QtGui.QIcon("fseparator.png"))
-        self.ui.actionTextDelimiter.setIcon(QtGui.QIcon("tdelimiter.png"))
-        self.ui.actionHorizontalHeader.setIcon(QtGui.QIcon("hheader.png"))
-        self.ui.actionVerticalHeader.setIcon(QtGui.QIcon("vheader.png"))
-        self.ui.actionHeaderLabels.setIcon(QtGui.QIcon("setheader.png"))
-        self.ui.actionQuit.setIcon(QtGui.QIcon("quit.png"))
-        self.ui.actionAbout.setIcon(QtGui.QIcon("about.png"))
+        self.setWindowIcon(QtGui.QIcon(asset_path("icon.png")))
+        self.ui.actionOpenFile.setIcon(QtGui.QIcon(asset_path("open_file.png")))
+        self.ui.actionFieldSeparator.setIcon(QtGui.QIcon(asset_path("fseparator.png")))
+        self.ui.actionTextDelimiter.setIcon(QtGui.QIcon(asset_path("tdelimiter.png")))
+        self.ui.actionHorizontalHeader.setIcon(QtGui.QIcon(asset_path("hheader.png")))
+        self.ui.actionVerticalHeader.setIcon(QtGui.QIcon(asset_path("vheader.png")))
+        self.ui.actionHeaderLabels.setIcon(QtGui.QIcon(asset_path("setheader.png")))
+        self.ui.actionQuit.setIcon(QtGui.QIcon(asset_path("quit.png")))
+        self.ui.actionAbout.setIcon(QtGui.QIcon(asset_path("about.png")))
 
         # Load settings
         self.loadSettings()
@@ -230,8 +230,8 @@ class Main(QtWidgets.QMainWindow):
 
     # About message
     def aboutMessage(self):
-        message = """<strong>bwCSV</strong><br />
-        Version 1.2.0<br />
+        message = f"""<strong>bwCSV</strong><br />
+        Version {__version__}<br />
         <br />
         This is free software.<br />
         Released under the General Public License.<br />
@@ -470,9 +470,13 @@ class Main(QtWidgets.QMainWindow):
 
 
 # Creates an application object and begins the event handling loop
-if __name__ == "__main__":
+def main() -> int:
+    """Create the application and start its event loop."""
     app = QtWidgets.QApplication(sys.argv)
     window = Main()
     window.show()
-    ret = app.exec()
-    sys.exit(ret)
+    return app.exec()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
