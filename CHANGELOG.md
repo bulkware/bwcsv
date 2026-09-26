@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.5.0] - 2026-09-23
+## [1.5.2] - 2026-09-26
+
+### Changed
+
+- Version mismatch fix.
+
+## [1.5.1] - 2026-09-26
+
+### Changed
+
+- Packaging: Build Debian packages with Debian Trixie and modernize release workflows.
+
+## [1.5.0] - 2026-09-26
 
 ### Changed
 

@@ -77,6 +77,32 @@ GitHub Actions builds unsigned Windows, Debian, and RPM artifacts for matching v
 SignPath integration will sign the Windows artifacts only.
 See [the code signing policy template](docs/CODE_SIGNING_POLICY.md).
 
+## Creating a release
+
+`CHANGELOG.md` is the release source of truth. To prepare a release:
+
+1. Add a dated `## [X.Y.Z] - YYYY-MM-DD` entry below the empty `## [Unreleased]` section. Use
+   categorized notes such as `### Added`, `### Changed`, `### Fixed`, or `### Packaging`.
+2. Run `make prepare-release`. It reads that latest changelog entry and updates `pyproject.toml`
+   and AppStream metadata to the same version and date.
+3. Run `make check`, review the changes, then commit and merge them into `main`.
+4. Update local `main`, create an annotated `vX.Y.Z` tag, and push that tag:
+
+   ```bash
+   git switch main
+   git pull --ff-only origin main
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin refs/tags/vX.Y.Z:refs/tags/vX.Y.Z
+   ```
+
+The tag starts the GitHub Actions release workflow. It verifies the version, then builds a Debian
+Trixie `.deb`, Fedora/RHEL `.rpm`, Windows `.msi`, and portable Windows `.zip`. If every build
+succeeds, the workflow creates the GitHub release and attaches those artifacts.
+
+If a release workflow fails before publishing, fix the issue in a new patch release, repeat this
+checklist, and tag the new version. The complete release history remains in `CHANGELOG.md`; retain
+only publicly released versions in AppStream metadata.
+
 ## Development
 
 `make check` runs the display-free tests and PyLint checks used by CI. `make coverage` reports
