@@ -25,7 +25,7 @@ cp src/bwcsv/assets/*.png "$source_root/src/bwcsv/assets/"
 cp data/org.bulkware.bwcsv.desktop data/org.bulkware.bwcsv.metainfo.xml "$source_root/data/"
 cp data/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png \
     "$source_root/data/icons/hicolor/512x512/apps/"
-cp docs/*.md docs/*.txt "$source_root/docs/"
+cp docs/*.md "$source_root/docs/"
 cp docs/images/*.png "$source_root/docs/images/"
 cp examples/*.csv "$source_root/examples/"
 tar -czf "$build_root/SOURCES/bwcsv-$version.tar.gz" \

@@ -26,6 +26,7 @@
   </provides>
   <url type="homepage">https://github.com/bulkware/bwcsv</url>
   <releases>
+    <release version="1.5.3" date="2026-09-26"/>
     <release version="1.5.2" date="2026-09-26"/>
   </releases>
   <content_rating type="oars-1.1"/>
