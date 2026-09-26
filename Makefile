@@ -4,7 +4,7 @@ SUDO ?= sudo
 .DEFAULT_GOAL := help
 # These are commands, not files; declaring them phony keeps an equally named
 # artifact from suppressing a requested build action.
-.PHONY: help run test coverage lint check build install-deb install-rpm deb rpm exe clean clean-dry-run
+.PHONY: help run test coverage lint check build install-deb install-rpm deb rpm windows clean clean-dry-run
 
 # Permit `make run path/to/file.csv` without treating the path as a real target.
 RUN_ARGUMENTS := $(filter-out run,$(MAKECMDGOALS))
@@ -24,7 +24,7 @@ help:
 	@echo "make install-rpm    Install Fedora/RHEL package build dependencies"
 	@echo "make deb            Build a Debian package"
 	@echo "make rpm            Build an RPM package"
-	@echo "make exe            Build Windows MSI and portable ZIP (Windows only)"
+	@echo "make windows        Build Windows MSI and portable ZIP (Windows only)"
 	@echo "make clean          Remove generated build and cache files"
 	@echo "make clean-dry-run  Preview generated files to remove"
 
@@ -61,7 +61,7 @@ deb:
 rpm:
 	PACKAGE_REVISION="$(PACKAGE_REVISION)" bash scripts/build-rpm.sh
 
-exe:
+windows:
 	powershell.exe -ExecutionPolicy Bypass -File scripts/build-windows.ps1
 
 clean:

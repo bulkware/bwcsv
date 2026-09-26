@@ -68,7 +68,7 @@ The project builds native packages from the same source metadata:
 
 - Debian package: `make install-deb && make deb` (Debian/Ubuntu)
 - RPM package: `make install-rpm && make rpm` (Fedora/RHEL)
-- Windows MSI and portable ZIP: `make exe` on Windows
+- Windows MSI and portable ZIP: `make windows` on Windows
 
 Native package builds require their platform's build dependencies. Windows builds use cx_Freeze and
 produce an MSI plus a folder-based portable ZIP.
