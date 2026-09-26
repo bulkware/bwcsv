@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bwCSV"
-version = "1.5.2"
+version = "1.5.3"
 description = "Lightweight desktop application for viewing CSV files."
 readme = "README.md"
 requires-python = ">=3.11"
