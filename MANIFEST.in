@@ -1,5 +1,6 @@
 # Include user-facing release information in source distributions.
 include CHANGELOG.md
+include ICONS.md
 include LICENSE.md
 # Native package metadata and example data are consumed outside the Python wheel.
 recursive-include data *

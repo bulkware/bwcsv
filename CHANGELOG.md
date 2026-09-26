@@ -21,13 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Migrated from PyQt6 into PySide6.
 
-## [1.3.0]
+## [1.3.0] - 2026-09-17
 
 ### Changed
 
 - Migrated from PyQt4 into PyQt6.
 
-## [1.2.0]
+## [1.2.0] - 2019-04-19
 
 ### Changed
 
@@ -35,7 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the SourceForge link to a GitHub link.
 - Converted the wiki into `README.md`.
 
-## [1.1.0]
+## [1.1.1] - 2018-07-08
+
+### Changed
+
+- Updated CHANGELOG and created a README.
+
+## [1.1.0] - 2014-02-13
 
 ### Changed
 
@@ -46,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed version numbering.
 - Saved window geometry.
 
-## [1.01]
+## [1.0.1] - 2013-02-13
 
 ### Changed
 
@@ -54,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handled settings with Qt's `QSettings`.
 - Displayed the opened filename in the window title.
 
-## [1.00]
+## [1.0.0] - 2013-01-01
 
 ### Added
 

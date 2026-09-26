@@ -18,7 +18,7 @@ source_root="$staging_root/bwcsv-$version"
 mkdir -p "$source_root/src/bwcsv/assets" \
     "$source_root/data/icons/hicolor/512x512/apps" \
     "$source_root/docs/images" "$source_root/examples"
-cp pyproject.toml README.md CHANGELOG.md LICENSE.md MANIFEST.in "$source_root/"
+cp pyproject.toml README.md CHANGELOG.md ICONS.md LICENSE.md MANIFEST.in "$source_root/"
 cp src/freeze_entry.py "$source_root/src/"
 cp src/bwcsv/*.py src/bwcsv/mainwindow.ui "$source_root/src/bwcsv/"
 cp src/bwcsv/assets/*.png "$source_root/src/bwcsv/assets/"

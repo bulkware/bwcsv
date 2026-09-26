@@ -1,6 +1,9 @@
 # bwCSV
 
-A lightweight desktop application to view CSV files.
+Lightweight desktop application for viewing CSV files.
+
+bwCSV displays comma-separated value files in a searchable table and lets users select delimiters
+and table headers.
 
 
 ## What are CSV-files?

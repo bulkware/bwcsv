@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 
-"""A lightweight application to view CSV files."""
+"""Lightweight desktop application for viewing CSV files."""
 
 # Python imports
 import os

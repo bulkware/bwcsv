@@ -3,7 +3,7 @@
   <!-- Keep this identifier aligned with the desktop file and installed icon. -->
   <id>org.bulkware.bwcsv</id>
   <name>bwCSV</name>
-  <summary>View comma-separated value files</summary>
+  <summary>Lightweight desktop application for viewing CSV files</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
   <developer id="org.bulkware">
@@ -11,8 +11,8 @@
   </developer>
   <description>
     <p>
-      bwCSV is a lightweight application for viewing comma-separated value files,
-      searching their contents, and choosing their separators and headers.
+      bwCSV displays comma-separated value files in a searchable table and lets users
+      select delimiters and table headers.
     </p>
   </description>
   <categories>

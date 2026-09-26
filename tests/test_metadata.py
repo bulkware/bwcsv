@@ -13,6 +13,11 @@ from bwcsv.resources import asset_path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SHORT_DESCRIPTION = "Lightweight desktop application for viewing CSV files"
+LONG_DESCRIPTION = (
+    "bwCSV displays comma-separated value files in a searchable table and lets users "
+    "select delimiters and table headers."
+)
 
 
 class MetadataTests(unittest.TestCase):
@@ -30,11 +35,42 @@ class MetadataTests(unittest.TestCase):
         self.assertEqual(release.attrib["version"], version)
         self.assertIn(f"## [{version}]", (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))
 
+    def test_user_facing_descriptions_match_package_metadata(self):
+        """Short and long descriptions remain consistent across distribution formats."""
+        project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        desktop = (ROOT / "data/org.bulkware.bwcsv.desktop").read_text(encoding="utf-8")
+        appstream = ElementTree.parse(ROOT / "data/org.bulkware.bwcsv.metainfo.xml")
+        debian = (ROOT / "debian/control").read_text(encoding="utf-8")
+        rpm = (ROOT / "packaging/rpm/bwcsv.spec").read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        main = (ROOT / "src/bwcsv/main.py").read_text(encoding="utf-8")
+
+        self.assertEqual(project["project"]["description"], f"{SHORT_DESCRIPTION}.")
+        self.assertIn(f"{SHORT_DESCRIPTION}.", readme)
+        self.assertIn(f'"""{SHORT_DESCRIPTION}."""', main)
+        self.assertIn(f"Comment={SHORT_DESCRIPTION}", desktop)
+        self.assertEqual(appstream.findtext("summary"), SHORT_DESCRIPTION)
+        description = " ".join(appstream.find("description/p").itertext())
+        self.assertEqual(" ".join(description.split()), LONG_DESCRIPTION)
+        self.assertIn(f"Description: {SHORT_DESCRIPTION}", debian)
+        self.assertIn(LONG_DESCRIPTION, debian.replace("\n ", " "))
+        self.assertIn(f"Summary:        {SHORT_DESCRIPTION}", rpm)
+        self.assertIn(LONG_DESCRIPTION, rpm.replace("\n", " "))
+
     def test_runtime_assets_are_available_without_the_working_directory(self):
         """Icons are resolved from package data rather than process state."""
         # Resource lookup must be independent of the directory used to launch.
         for name in ("icon.png", "about.png", "open_file.png"):
             self.assertTrue(Path(asset_path(name)).is_file(), name)
+
+    def test_icon_licensing_is_documented_at_the_project_root(self):
+        """The source and license of bundled third-party icons remain visible."""
+        icons = (ROOT / "ICONS.md").read_text(encoding="utf-8")
+
+        self.assertIn("## Application icons", icons)
+        self.assertIn("## Oxygen icons", icons)
+        self.assertIn("src/bwcsv/assets/about.png", icons)
+        self.assertFalse((ROOT / "docs/ICON_ATTRIBUTION.txt").exists())
 
     def test_native_metadata_generator_updates_staged_files(self):
         """Native package builds derive versions and notes from tracked metadata."""
