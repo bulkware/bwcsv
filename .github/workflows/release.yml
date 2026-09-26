@@ -13,8 +13,8 @@ jobs:
   verify-release-tag:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Match the tag to project metadata
@@ -27,14 +27,14 @@ jobs:
     needs: verify-release-tag
     runs-on: windows-2025
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Build unsigned Windows artifacts
         shell: pwsh
         run: ./scripts/build-windows.ps1
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: windows
           path: |
@@ -44,15 +44,17 @@ jobs:
   debian:
     needs: verify-release-tag
     runs-on: ubuntu-24.04
+    container: debian:trixie
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install Debian build dependencies
         run: |
-          sudo apt-get update
-          make install-deb
+          apt-get update
+          apt-get install --yes make
+          make SUDO= install-deb
       - name: Build the Debian package
         run: bash scripts/build-deb.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: debian
           path: build/deb/*.deb
@@ -62,15 +64,17 @@ jobs:
     runs-on: ubuntu-24.04
     container: fedora:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install RPM build dependencies
-        run: make SUDO= install-rpm
+        run: |
+          dnf --assumeyes install dnf-plugins-core rpm-build
+          dnf --assumeyes builddep packaging/rpm/bwcsv.spec
       - name: Build the RPM package
         run: |
           bash scripts/build-rpm.sh
           mkdir -p build/release
           cp build/rpm/rpmbuild/RPMS/noarch/*.rpm build/release/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: rpm
           path: build/release/*.rpm
@@ -79,7 +83,7 @@ jobs:
     needs: [windows, debian, rpm]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           path: release-artifacts
           merge-multiple: true
