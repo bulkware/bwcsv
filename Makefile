@@ -20,7 +20,7 @@ help:
 	@echo "make lint           Run PyLint on maintained source files"
 	@echo "make check          Run tests and lint"
 	@echo "make build          Build Python source and wheel distributions"
-	@echo "make install-deb    Install Debian/Ubuntu package build dependencies"
+	@echo "make install-deb    Install Debian Trixie package build dependencies"
 	@echo "make install-rpm    Install Fedora/RHEL package build dependencies"
 	@echo "make deb            Build a Debian package"
 	@echo "make rpm            Build an RPM package"
@@ -49,7 +49,9 @@ build:
 	$(PYTHON) -m build
 
 install-deb:
-	$(SUDO) apt-get -y build-dep .
+	$(SUDO) apt-get update
+	$(SUDO) apt-get -y install appstream debhelper dh-python dpkg-dev \
+		pybuild-plugin-pyproject python3-all python3-pyside6.qtwidgets python3-setuptools
 
 install-rpm:
 	$(SUDO) dnf --assumeyes install dnf-plugins-core rpm-build

@@ -66,7 +66,7 @@ Then run the application from a checkout:
 
 The project builds native packages from the same source metadata:
 
-- Debian package: `make install-deb && make deb` (Debian/Ubuntu)
+- Debian package: `make install-deb && make deb` (Debian Trixie or newer)
 - RPM package: `make install-rpm && make rpm` (Fedora/RHEL)
 - Windows MSI and portable ZIP: `make windows` on Windows
 
