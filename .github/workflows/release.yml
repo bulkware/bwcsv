@@ -34,7 +34,7 @@ jobs:
       - name: Build unsigned Windows artifacts
         shell: pwsh
         run: ./scripts/build-windows.ps1
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: windows
           path: |
@@ -54,7 +54,7 @@ jobs:
           make SUDO= install-deb
       - name: Build the Debian package
         run: bash scripts/build-deb.sh
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: debian
           path: build/deb/*.deb
@@ -74,7 +74,7 @@ jobs:
           bash scripts/build-rpm.sh
           mkdir -p build/release
           cp build/rpm/rpmbuild/RPMS/noarch/*.rpm build/release/
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: rpm
           path: build/release/*.rpm
@@ -83,7 +83,7 @@ jobs:
     needs: [windows, debian, rpm]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           path: release-artifacts
           merge-multiple: true
@@ -95,5 +95,13 @@ jobs:
           if ! gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --generate-notes
           fi
-          gh release upload "$GITHUB_REF_NAME" release-artifacts/* \
+          artifact_files=()
+          while IFS= read -r -d '' artifact; do
+            artifact_files+=("$artifact")
+          done < <(find release-artifacts -type f -print0)
+          if (( ${#artifact_files[@]} == 0 )); then
+            echo "No release files were downloaded." >&2
+            exit 1
+          fi
+          gh release upload "$GITHUB_REF_NAME" "${artifact_files[@]}" \
             --repo "$GITHUB_REPOSITORY" --clobber
