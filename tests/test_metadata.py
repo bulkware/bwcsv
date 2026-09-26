@@ -43,6 +43,7 @@ class MetadataTests(unittest.TestCase):
             staging = Path(directory)
             changelog = staging / "changelog"
             spec = staging / "bwcsv.spec"
+            changelog.write_text("bwcsv (1.4.0-1) unstable; urgency=medium\n", encoding="utf-8")
             shutil.copy2(ROOT / "packaging/rpm/bwcsv.spec", spec)
             subprocess.run(
                 [
@@ -57,5 +58,39 @@ class MetadataTests(unittest.TestCase):
 
             project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
             version = project["project"]["version"]
-            self.assertIn(f"bwcsv ({version}-1)", changelog.read_text(encoding="utf-8"))
+            generated_changelog = changelog.read_text(encoding="utf-8")
+            self.assertIn(f"bwcsv ({version}-1)", generated_changelog)
+            self.assertTrue(
+                generated_changelog.endswith("bwcsv (1.4.0-1) unstable; urgency=medium\n")
+            )
             self.assertIn(f"Version:        {version}", spec.read_text(encoding="utf-8"))
+
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts/package_metadata.py"),
+                    "--debian-changelog", str(changelog),
+                ],
+                check=True,
+                cwd=ROOT,
+            )
+            self.assertEqual(generated_changelog, changelog.read_text(encoding="utf-8"))
+
+    def test_native_metadata_generator_rejects_invalid_revisions(self):
+        """Native package revisions must remain valid package-version components."""
+        # argparse returns a non-zero status before writing a requested output.
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts/package_metadata.py"),
+                    "--debian-changelog", str(Path(directory) / "changelog"),
+                    "--revision", "0",
+                ],
+                capture_output=True,
+                check=False,
+                text=True,
+                cwd=ROOT,
+            )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("positive integer", result.stderr)

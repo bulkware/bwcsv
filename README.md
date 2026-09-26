@@ -65,7 +65,7 @@ The project builds native packages from the same source metadata:
 
 - Debian package: `make install-deb && make deb` (Debian/Ubuntu)
 - RPM package: `make install-rpm && make rpm` (Fedora/RHEL)
-- Windows MSI and portable ZIP: `make windows` on Windows
+- Windows MSI and portable ZIP: `make exe` on Windows
 
 Native package builds require their platform's build dependencies. Windows builds use cx_Freeze and
 produce an MSI plus a folder-based portable ZIP.
@@ -76,5 +76,7 @@ See [the code signing policy template](docs/CODE_SIGNING_POLICY.md).
 
 ## Development
 
-`make test` runs display-free parser and packaging-metadata tests. The Qt form is generated from
-`src/bwcsv/mainwindow.ui`; run `scripts/generate-ui.sh` after editing it.
+`make check` runs the display-free tests and PyLint checks used by CI. `make coverage` reports
+application-code coverage, and `make clean-dry-run` previews generated files that `make clean`
+would remove. The Qt form is generated from `src/bwcsv/mainwindow.ui`; run
+`scripts/generate-ui.sh` after editing it.

@@ -48,14 +48,17 @@ def debian_changelog(
     path: Path, package: str, version: str, revision: str, release_date: date,
     notes: list[str], maintainer: str, email: str,
 ) -> None:
-    """Write a Debian-native changelog from the latest public release notes."""
+    """Prepend the current Debian-native changelog entry once."""
     timestamp = format_datetime(datetime.combine(release_date, time(), timezone.utc))
     entries = "\n".join(f"  * {note}" for note in notes)
-    path.write_text(
+    entry = (
         f"{package} ({version}-{revision}) unstable; urgency=medium\n\n{entries}\n\n"
-        f" -- {maintainer} <{email}>  {timestamp}\n",
-        encoding="utf-8",
+        f" -- {maintainer} <{email}>  {timestamp}\n"
     )
+    # Package rebuilds must not discard or duplicate prior native-package notes.
+    contents = path.read_text(encoding="utf-8") if path.exists() else ""
+    if not contents.startswith(f"{package} ({version}-{revision}) "):
+        path.write_text(entry + contents, encoding="utf-8")
 
 
 def rpm_spec(path: Path, version: str, revision: str, release_date: date, notes: list[str],
@@ -79,6 +82,8 @@ def main() -> int:
     parser.add_argument("--rpm-spec", type=Path)
     parser.add_argument("--revision", default="1")
     arguments = parser.parse_args()
+    if not re.fullmatch(r"[1-9]\d*", arguments.revision):
+        parser.error("--revision must be a positive integer")
     root = Path(__file__).resolve().parents[1]
     package, version, maintainer, email = project_metadata(root / "pyproject.toml")
     release_version, release_date, notes = latest_release(root / "CHANGELOG.md")

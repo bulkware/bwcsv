@@ -30,7 +30,7 @@ bwcsv = "bwcsv.main:main"
 Source = "https://github.com/bulkware/bwcsv"
 
 [project.optional-dependencies]
-dev = ["pylint>=3.0"]
+dev = ["coverage>=7.0", "pylint>=3.0"]
 release = ["build>=1.2", "cx-Freeze>=8.6"]
 
 [tool.setuptools.packages.find]
@@ -94,8 +94,17 @@ disable = [
     "too-many-instance-attributes",
     "too-many-return-statements",
     "too-few-public-methods",
+    "too-many-arguments",
     "trailing-whitespace",
+    "too-many-positional-arguments",
     "unused-argument",
     "unused-variable",
     "useless-object-inheritance",
 ]
+
+[tool.coverage.run]
+branch = true
+source = ["bwcsv"]
+
+[tool.coverage.report]
+show_missing = true

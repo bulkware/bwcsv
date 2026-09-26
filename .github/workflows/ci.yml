@@ -20,7 +20,7 @@ jobs:
           python-version: "3.12"
       - name: Install the test environment
         run: python -m pip install --upgrade pip .[dev]
-      - name: Run unit tests
-        run: make test
+      - name: Run tests and static checks
+        run: make check
       - name: Check maintained Python files compile
         run: python -m compileall -q src tests scripts
