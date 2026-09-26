@@ -4,6 +4,7 @@ import importlib.util
 from pathlib import Path
 import sys
 import tempfile
+import tomllib
 import unittest
 
 
@@ -24,7 +25,8 @@ class PackageMetadataTests(unittest.TestCase):
         """The tracked changelog supplies the version and categorized package notes."""
         release = PACKAGE_METADATA.parse_changelog(ROOT / "CHANGELOG.md")
 
-        self.assertEqual(release.version, "1.5.0")
+        project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(release.version, project["project"]["version"])
         self.assertTrue(release.entries)
         self.assertTrue(all(category in PACKAGE_METADATA.CATEGORY_NAMES
                             for category, _ in release.entries))

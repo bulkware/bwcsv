@@ -4,7 +4,7 @@ SUDO ?= sudo
 .DEFAULT_GOAL := help
 # These are commands, not files; declaring them phony keeps an equally named
 # artifact from suppressing a requested build action.
-.PHONY: help run test coverage lint check build install-deb install-rpm deb rpm windows clean clean-dry-run
+.PHONY: help run test coverage lint check build prepare-release install-deb install-rpm deb rpm windows clean clean-dry-run
 
 # Permit `make run path/to/file.csv` without treating the path as a real target.
 RUN_ARGUMENTS := $(filter-out run,$(MAKECMDGOALS))
@@ -20,6 +20,7 @@ help:
 	@echo "make lint           Run PyLint on maintained source files"
 	@echo "make check          Run tests and lint"
 	@echo "make build          Build Python source and wheel distributions"
+	@echo "make prepare-release  Synchronize metadata with the latest CHANGELOG release"
 	@echo "make install-deb    Install Debian Trixie package build dependencies"
 	@echo "make install-rpm    Install Fedora/RHEL package build dependencies"
 	@echo "make deb            Build a Debian package"
@@ -41,12 +42,15 @@ coverage:
 lint:
 	PYTHONPATH=src $(PYTHON) -m pylint --persistent=no src/bwcsv/main.py \
 		src/bwcsv/csvparser.py src/bwcsv/functions.py src/bwcsv/resources.py \
-		tests scripts/clean.py scripts/package_metadata.py
+		tests scripts/clean.py scripts/package_metadata.py scripts/prepare_release.py
 
 check: test lint
 
 build:
 	$(PYTHON) -m build
+
+prepare-release:
+	$(PYTHON) scripts/prepare_release.py
 
 install-deb:
 	$(SUDO) apt-get update
