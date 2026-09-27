@@ -4,5 +4,5 @@ include ICONS.md
 include LICENSE.md
 # Native package metadata and example data are consumed outside the Python wheel.
 recursive-include data *
-recursive-include docs *.md *.png *.txt
+recursive-include docs *.md *.png
 recursive-include examples *.csv

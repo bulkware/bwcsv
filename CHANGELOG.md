@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.6] - 2026-09-27
+
+### Changed
+
+- Standardized runtime version handling with the other bulkware applications.
+
 ## [1.5.5] - 2026-09-26
 
 ### Changed
@@ -35,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Packaging: Build Debian packages with Debian Trixie and modernize release workflows.
+- Packaging system builds Debian packages now with Debian Trixie.
 
 ## [1.5.0] - 2026-09-26
 

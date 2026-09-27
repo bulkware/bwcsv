@@ -17,7 +17,8 @@ mkdir -p "$build_root"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 source_root="$staging_root/bwcsv-$version"
 mkdir -p "$source_root/src/bwcsv/assets" \
     "$source_root/data/icons/hicolor/512x512/apps" \
-    "$source_root/docs/images" "$source_root/examples"
+    "$source_root/docs/images" "$source_root/examples" "$source_root/tests" \
+    "$source_root/scripts" "$source_root/packaging/rpm" "$source_root/debian"
 cp pyproject.toml README.md CHANGELOG.md ICONS.md LICENSE.md MANIFEST.in "$source_root/"
 cp src/freeze_entry.py "$source_root/src/"
 cp src/bwcsv/*.py src/bwcsv/mainwindow.ui "$source_root/src/bwcsv/"
@@ -28,6 +29,10 @@ cp data/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png \
 cp docs/*.md "$source_root/docs/"
 cp docs/images/*.png "$source_root/docs/images/"
 cp examples/*.csv "$source_root/examples/"
+cp tests/*.py "$source_root/tests/"
+cp scripts/package_metadata.py scripts/prepare_release.py "$source_root/scripts/"
+cp packaging/rpm/bwcsv.spec "$source_root/packaging/rpm/"
+cp debian/changelog debian/control "$source_root/debian/"
 tar -czf "$build_root/SOURCES/bwcsv-$version.tar.gz" \
     -C "$staging_root" "bwcsv-$version"
 

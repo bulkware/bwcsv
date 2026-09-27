@@ -70,6 +70,8 @@ The project builds native packages from the same source metadata:
 - RPM package: `make install-rpm && make rpm` (Fedora/RHEL)
 - Windows MSI and portable ZIP: `make windows` on Windows
 
+Debian and RPM package builds run the source-tree unit tests and fail if they do not pass.
+
 Native package builds require their platform's build dependencies. Windows builds use cx_Freeze and
 produce an MSI plus a folder-based portable ZIP.
 
