@@ -1,7 +1,7 @@
 # This template is copied and versioned by scripts/package_metadata.py before
 # rpmbuild runs, keeping release automation from modifying tracked inputs.
 Name:           bwcsv
-Version:        1.5.0
+Version:        1.5.6
 Release:        1%{?dist}
 Summary:        Lightweight desktop application for viewing CSV files
 
@@ -51,5 +51,5 @@ install -D -m 644 data/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png \
 %{_datadir}/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png
 
 %changelog
-* Wed Sep 23 2026 Antti-Pekka Meronen <antice@kapsi.fi> - 1.5.0-1
-- Packaging system for Debian (deb) and Red Hat (rpm) based distros.
+* Sun Sep 27 2026 Antti-Pekka Meronen <antice@kapsi.fi> - 1.5.6-1
+- Changed: Standardized runtime version handling with the other Bulkware applications.
