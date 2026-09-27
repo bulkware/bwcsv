@@ -28,6 +28,9 @@ select delimiters and table headers.
 %build
 %pyproject_wheel
 
+%check
+PYTHONPATH=src %{python3} -m unittest discover -s tests -v
+
 %install
 %pyproject_install
 install -D -m 644 data/org.bulkware.bwcsv.desktop \
@@ -48,5 +51,5 @@ install -D -m 644 data/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png \
 %{_datadir}/icons/hicolor/512x512/apps/org.bulkware.bwcsv.png
 
 %changelog
-* Tue Sep 23 2026 Antti-Pekka Meronen <antice@kapsi.fi> - 1.5.0-1
+* Wed Sep 23 2026 Antti-Pekka Meronen <antice@kapsi.fi> - 1.5.0-1
 - Packaging system for Debian (deb) and Red Hat (rpm) based distros.
